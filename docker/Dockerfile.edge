@@ -1,0 +1,23 @@
+# For NVIDIA Jetson / GPU edge device
+# Swap base image for nvcr.io/nvidia/l4t-pytorch on Jetson
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libv4l-dev \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Default: webcam index 0. Override via docker run --env SOURCE=rtsp://...
+ENV CAMERA_ID=cam_01
+ENV SOURCE=0
+
+CMD ["sh", "-c", "python edge/main.py --camera-id $CAMERA_ID --source $SOURCE"]

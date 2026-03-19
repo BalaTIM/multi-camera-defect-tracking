@@ -1,0 +1,42 @@
+system:
+  latency_target_ms: 200
+  fps_target: 25
+  log_level: INFO
+
+kafka:
+  bootstrap_servers: "localhost:9092"
+  topic: "defect_tracking"
+  group_id: "central_server"
+  auto_offset_reset: "latest"
+
+redis:
+  url: "redis://localhost:6379"
+  ttl_seconds: 300
+
+reid:
+  embedding_dim: 256
+  similarity_threshold: 0.75
+  distance_metric: cosine       # cosine | euclidean
+  feature_ttl_seconds: 30       # drop stale features
+
+detection:
+  model: yolov8m                # yolov8n / yolov8m / yolov8l
+  weights_path: "models/defect_yolov8m.pt"
+  confidence_threshold: 0.50
+  iou_threshold: 0.45
+  device: auto                  # auto | cpu | cuda | mps
+
+tracking:
+  max_age: 30                   # DeepSORT max frames without detection
+  n_init: 3
+  max_cosine_distance: 0.4
+  nn_budget: 100
+
+fusion:
+  min_cameras_for_confirmation: 2
+  temporal_window_ms: 100       # window to group cross-cam hits
+
+database:
+  url: "postgresql+asyncpg://defect_user:defect_pass@localhost:5432/defect_tracking"
+
+cameras: []                     # populated per edge node via CLI args
